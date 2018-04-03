@@ -22,60 +22,59 @@ import org.nd4j.linalg.lossfunctions.LossFunctions
 
 
 
-object WineTaster {
+object Wine {
   def main(args: Array[String]): Unit = {
-    //First: get the dataset using the record reader. CSVRecordReader handles loading/parsing
-    val numLinesToSkip = 1
-    val delimiter = ';'
-    val recordReaderTrain = new CSVRecordReader(numLinesToSkip, delimiter)
-    recordReaderTrain.initialize(new FileSplit(new ClassPathResource("winequality-red-train.csv").getFile))
-    val recordReaderTest = new CSVRecordReader(numLinesToSkip, delimiter)
-    recordReaderTest.initialize(new FileSplit(new ClassPathResource("winequality-red-test.csv").getFile))
 
-    //Second: the RecordReaderDataSetIterator handles conversion to DataSet objects, ready for use in neural network
-    val labelIndex = 11
-    val numInputs = labelIndex
-    val numClasses = 10
+    // Load CSV files
+    val numLinesToSkip = 0
+    val delimiter = ','
+    val recordReaderTrain = new CSVRecordReader(numLinesToSkip, delimiter)
+    recordReaderTrain.initialize(new FileSplit(new ClassPathResource("wine-train.csv").getFile))
+    val recordReaderTest = new CSVRecordReader(numLinesToSkip, delimiter)
+    recordReaderTest.initialize(new FileSplit(new ClassPathResource("wine-test.csv").getFile))
+
+    // Turn CSVs into DataSets
+    val labelIndex = 0
+    val numInputs = 13
+    val numClasses = 3
     val batchSize = 4
 
     val iteratorTrain = new RecordReaderDataSetIterator(recordReaderTrain, batchSize, labelIndex, numClasses)
     val iteratorTest = new RecordReaderDataSetIterator(recordReaderTest, batchSize, labelIndex, numClasses)
 
 
-    //We need to normalize our data. We'll use NormalizeStandardize (which gives us mean 0, unit variance):
+    // Normalize data: mean 0, stddev 1
     val normalizer = new NormalizerStandardize
     normalizer.fit(iteratorTrain) //Collect the statistics (mean/stdev) from the training data. This does not modify the input data
 
     iteratorTrain.setPreProcessor(normalizer)
     iteratorTest.setPreProcessor(normalizer)
 
+    // Take a look at our data
 //    val next = iteratorTrain.next()
 //    import org.nd4j.linalg.factory.Nd4j
 //    Nd4j.writeTxtString(next.getFeatureMatrix, System.out, 3)
 //    iteratorTrain.reset()
 
     val epochs = 5
-    val iterations = 1
     val seed = 123
-
 
     println("Build model....")
     val conf = new NeuralNetConfiguration.Builder()
       .seed(seed)
-      .iterations(iterations)
       .activation(Activation.RELU)
       .weightInit(WeightInit.XAVIER)
       .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-      .learningRate(0.01)
+      .learningRate(0.1)
       .regularization(true).l2(0.01)
-      .updater(new Nesterovs(0.1))
+      .updater(new Nesterovs(0.01))
       .list
       .layer(0, new DenseLayer.Builder()
         .activation(Activation.RELU)
-        .nIn(numInputs).nOut(40).build)
+        .nIn(numInputs).nOut(20).build)
       .layer(1, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
         .activation(Activation.SOFTMAX)
-        .nIn(40).nOut(numClasses).build)
+        .nIn(20).nOut(numClasses).build)
       .backprop(true)
       .pretrain(false)
       .build
@@ -95,14 +94,14 @@ object WineTaster {
     uiServer.attach(statsStorage)
 
     //Then add the StatsListener to collect this information from the network, as it trains
-    model.setListeners(new StatsListener(statsStorage, 10))
+    model.setListeners(new StatsListener(statsStorage, 1))
 
     // train the model
     val epochsIterator = new MultipleEpochsIterator(epochs, iteratorTrain)
     model.fit(epochsIterator)
 
     // evaluate the model on the test set
-    val labels = (1 to 10).map { _.toString }.toList
+    val labels = (1 to 3).map { _.toString }.toList
     val eval = model.evaluate(iteratorTest, labels)
     println(eval.stats())
   }
