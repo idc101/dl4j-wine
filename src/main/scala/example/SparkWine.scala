@@ -139,8 +139,8 @@ object SparkWine {
     // evaluate the model on the test set
     val labels = (1 to 3).map { _.toString }.toList
     var eval = new Evaluation(labels)
-    sparkNet.doEvaluation(datasetTest.javaRDD, eval, 64)
-    println(eval.stats())
+    val eval2 = sparkNet.doEvaluation(datasetTest.javaRDD, eval, 64)
+    println(eval2.stats())
   }
 
   // Copy of a function from org.deeplearning4j.spark.util.MLLibUtil but using Spark 2.0+ LabeledPoint
