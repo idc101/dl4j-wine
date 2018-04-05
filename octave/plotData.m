@@ -28,7 +28,4 @@ plot(X(two, 8), X(two, 11), 'ko', 'MarkerFaceColor', 'y', 'MarkerSize', 7);
 %plot(X(three, 8), X(three, 11), 'k-', 'LineWidth', 2, 'MarkerSize', 7);
 hold off;
 
-% xlabel ('% change');
-% ylabel ('quality');
-
 end

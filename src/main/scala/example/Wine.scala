@@ -26,7 +26,7 @@ object Wine {
   def main(args: Array[String]): Unit = {
 
     // Load CSV files
-    val numLinesToSkip = 0
+    val numLinesToSkip = 1
     val delimiter = ','
     val recordReaderTrain = new CSVRecordReader(numLinesToSkip, delimiter)
     recordReaderTrain.initialize(new FileSplit(new ClassPathResource("wine-train.csv").getFile))

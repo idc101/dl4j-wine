@@ -10,6 +10,12 @@ lazy val root = (project in file(".")).
     name := "dl4j",
     libraryDependencies += dl4j,
     libraryDependencies += dl4jUi,
+    libraryDependencies += dl4jSpark,
+    libraryDependencies += dl4jSparkMl,
     libraryDependencies += nd4j,
+    libraryDependencies += spark,
+    libraryDependencies += sparkSql,
+    libraryDependencies += sparkMl,
+    libraryDependencies += hadoop,
     libraryDependencies += scalaTest % Test
   )

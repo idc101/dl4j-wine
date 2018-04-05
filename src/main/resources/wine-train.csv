@@ -1,3 +1,4 @@
+label,alcohol,malic_acid,ash,alcalinity_of_ash,magnesium,total_phenols,flavanoids,nonflavanoid_phenols,proanthocyanins,color_intensity,hue,pc_of_diluted_wines,proline
 2,12.84,2.96,2.61,24,101,2.32,0.6,0.53,0.81,4.92,0.89,2.15,590
 0,13.05,1.77,2.1,17,107,3,3,0.28,2.03,5.04,0.88,3.35,885
 0,13.88,1.89,2.59,15,101,3.25,3.56,0.17,1.7,5.43,0.88,3.56,1095
